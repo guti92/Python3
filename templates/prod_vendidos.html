@@ -1,0 +1,46 @@
+{% extends "base_ingr.html" %}
+
+{% block title %}Productos más Vendidos{% endblock %}
+
+{% block page_content %}
+<div class="page-header">    
+    <h1>Productos más vendidos</h1>
+</div>
+
+
+<style>
+table {
+    font-family: arial, sans-serif;
+    border: 1px solid black;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid black;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+
+<table>
+    <tr>
+        <th>CODIGO</th>
+        <th>PRODUCTO</th>
+        <th>CANTIDAD</th>
+    </tr>
+        {% for result in produc %}
+            <tr>
+                <td>{{ result[1].codigo }}</td>
+                <td>{{ result[1].producto }}</td>
+                <td>{{ result[0] }}</td>
+            </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}
+

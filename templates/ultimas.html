@@ -1,0 +1,49 @@
+{% extends "base_ingr.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Últimas Ventas{% endblock %}
+
+{% block page_content %}
+<div class="page-header">    
+    <h1>Últimas Ventas</h1>
+</div>
+
+
+<style>
+table {
+    font-family: arial, sans-serif;
+    border: 1px solid black;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid black;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+
+<table>
+    <tr>
+        <th>CODIGO</th>
+        <th>CLIENTE</th>
+        <th>PRODUCTO</th>
+        <th>CANTIDAD</th>
+        <th>PRECIO</th>
+    </tr>
+        {% for x in ul_ventas %}
+    <tr>
+        <td>{{ x.codigo }}</td>
+        <td>{{ x.cliente }}</td>
+        <td>{{ x.producto }}</td>
+        <td>{{ x.cantidad }}</td>
+        <td>{{ x.precio }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+
