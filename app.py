@@ -180,7 +180,7 @@ def clientes_prod():
                 if len(val) == 0:
                     flash('No hemos encontrado resultados para su busqueda')
                 elif len(val) == 1:
-                    listar = archivocsv.productos_por_cliente(registros,producto)
+                    listar = archivocsv.clientes_por_producto(registros,producto)
                     return render_template('clientes_prod.html', form = formulario, listar = listar, producto= formulario.producto.data.upper())
                 else:
                     flash('Hemos encontrado varios clientes. Por favor seleccione el que desee:')
