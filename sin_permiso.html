@@ -1,0 +1,10 @@
+{% extends "base_index.html" %}
+
+{% block title %}NO AUTORIZADO{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>    <h1>Para estar aquí es excluyente estar logueado, favor de hacerlo.</h1>
+    <a href={{ url_for('ingresar') }} class="btn btn-info">Ingresar<a>
+</div>
+{% endblock %}

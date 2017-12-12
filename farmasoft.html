@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lista de Usuarios</title>
+</head>
+<body>
+
+<h1>Usuarios</h1>
+<p>Esta es la lista de usuarios</p>
+<table>
+    <tr>
+        <th>Nombre</th>
+        <th>Nick</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.name }}</td>
+        <td>{{ user.nick }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if value > 0 %}
+<p>El valor es mayor a cero</p>
+{% else %}
+<p>El valor es menor a cero</p>
+{% endif %}
+
+</body>
+</html>
