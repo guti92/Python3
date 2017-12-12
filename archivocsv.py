@@ -113,7 +113,7 @@ def listado(nombre_documento):
                 registros.append(Registro(cliente = linea[col_cliente].strip(' ').upper(), codigo = linea[col_codigo].strip(' '), producto = linea[col_producto].strip(' ').upper(), cantidad = float(linea[col_cantidad].strip(' ')), precio = float(linea[col_precio].strip(' '))))
     return (registros)
 
-
+#--Funcion que provee las ultimas ventas--#
 def listar_ventas(registros, ultimos):
     ventas = []
     registros_reverse = registros.reverse()
@@ -123,6 +123,7 @@ def listar_ventas(registros, ultimos):
         ventas.append(registros[x])
     return ventas
 
+#--Encuentra a los clientes que coincidan con los caracteres ingresados por el usuario--#
 
 def encontrar_clientes(registros, nombre_cliente):
     cliente = []
@@ -136,6 +137,8 @@ def encontrar_clientes(registros, nombre_cliente):
             pass
     return cliente
 
+#--Lista de productos que compro determinado cliente--#
+
 def productos_por_cliente(registros, cliente):
 
     nombre_cliente = cliente.upper()
@@ -145,6 +148,8 @@ def productos_por_cliente(registros, cliente):
         if nombre_cliente in registros[x].cliente:
             productos.append(registros[x])
     return productos
+
+#--Encuentra a los productos que coincidan con los caracteres ingresados por el usuario--#
 
 def encontrar_productos(registros, nombre_producto):
     producto = []
@@ -158,6 +163,8 @@ def encontrar_productos(registros, nombre_producto):
             pass
     return producto
 
+#--Lista de productos que compro determinado cliente--#
+
 def clientes_por_producto(registros, producto):
 
     nombre_producto = producto.upper()
@@ -167,6 +174,8 @@ def clientes_por_producto(registros, producto):
         if nombre_producto in registros[x].producto:
             cliente.append(registros[x])
     return cliente
+
+#--Listado de productos más vendidos--#
 
 def productos_mas_vendidos(registros, cantidad):
     producto = []
@@ -205,6 +214,7 @@ def productos_mas_vendidos(registros, cantidad):
         list_cant[x][1] = cant_producto[x][1]
     return list_cant
 
+#--Mejores clientes--#
 def clientes_mas_gastaron(registros, cantidad):
     clientes = []
     cant_cliente = []

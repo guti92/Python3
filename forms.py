@@ -12,12 +12,17 @@ class RegistrarForm(LoginForm):
     password_check = PasswordField('Verificar Contraseña', validators=[Required()])
     enviar = SubmitField('Registrarse')
 
+class PasswordForm(FlaskForm):
+	password_new = PasswordField('Ingrese su nueva contraseña', validators=[Required()])
+	password_check = PasswordField('Verificar contraseña', validators=[Required()])
+	enviar = SubmitField('Aplicar')
+
 class ProductoForm(FlaskForm):
-    producto = StringField('Ingrese el nombre del producto que desea Buscar ', validators=[Required()])
+    producto = StringField('Ingrese el nombre del producto que desea buscar ', validators=[Required()])
     enviar = SubmitField('Buscar')
 
 class ClienteForm(FlaskForm):
-    cliente = StringField('Ingrese el nombre del cliente que desea Buscar ', validators=[Required()])
+    cliente = StringField('Ingrese el nombre del cliente que desea buscar ', validators=[Required()])
     enviar = SubmitField('Buscar')
 
 

@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 import csv
 import archivocsv
-from datetime import datetime
-from flask import Flask, render_template, redirect, url_for, flash, session
+from datetime import datetime, date, time, timedelta
+import calendar
+from flask import Flask, render_template, redirect, url_for, flash, session, send_file
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_script import Manager
-from forms import LoginForm, ProductoForm, ClienteForm, RegistrarForm
+from forms import LoginForm, ProductoForm, ClienteForm, RegistrarForm, PasswordForm
 
 app = Flask(__name__)
 manager = Manager(app)
@@ -20,7 +21,7 @@ registros = archivocsv.listado(nombre_de_archivo)
 app.config['SECRET_KEY'] = 'un string que funcione como llave'
 app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 
-#---Errores--#
+#-----Errores-----#
 
 @app.errorhandler(404)
 def no_encontrado(e):
@@ -37,7 +38,7 @@ def error_interno(e):
     else:
         flash('Error en el Servidor')
         return redirect(url_for('ingresar'))
-#---Rutas--#
+#-----Index-----#
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -49,7 +50,7 @@ def index2():
     else:
         flash('Para Acceder debe loguearse, ingrese sus credenciales por favor.')
         return redirect(url_for('ingresar'))
-
+#-----Logueo-----#
 @app.route('/ingresar', methods=['GET', 'POST'])
 def ingresar():
     formulario = LoginForm()
@@ -68,6 +69,7 @@ def ingresar():
                 return redirect(url_for('ingresar'))
     return render_template('login.html', formulario=formulario)
 
+#-----Registro de usuarios-----#
 
 @app.route('/registrar', methods=['GET', 'POST'])
 def registrar():
@@ -84,6 +86,32 @@ def registrar():
             flash('Las passwords no matchean')
     return render_template('registrar.html', formulario=formulario)
 
+#-----Cambio de contraseña-----#
+
+@app.route('/cambiar_contra', methods=['GET','POST'])
+def cambiar_pass():
+    if 'username' in session:
+        nombre_usuario=session['username']
+        formulario = PasswordForm()
+        if formulario.validate_on_submit():
+            if formulario.password_new.data == formulario.password_check.data:
+                datos=[nombre_usuario,formulario.password_new.data]
+                with open('usuarios') as archivo:
+                    filereader=csv.reader(archivo.readlines())
+                with open('usuarios','r+') as archivo:
+                    filewriter=csv.writer(archivo)
+                    for fila in filereader:
+                        if fila[0]==datos[0]:
+                            filewriter.writerow(datos)
+                        else:
+                            filewriter.writerow(fila)
+                flash('La contraseña fue cambiada con éxito')
+                return redirect(url_for('ingresar'))
+            else:
+                flash('Las passwords no matchean')
+        return render_template('cambiar_contra.html', formulario=formulario)
+
+#-----Deslogueo-----#
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -93,20 +121,22 @@ def logout():
     else:
         return redirect(url_for('index'))
 
-#---Ultimas Ventas Realizadas--#
+##----------------------------------------------Consultas-------------------------------------------------##
+
+#-----Ultimas Ventas Realizadas-----#
 
 @app.route('/ultimas', methods=['GET', 'POST'])
 def ultimas():
     if 'username' in session:   
         ultimos = 10
         ul_ventas = []
-        ul_ventas=archivocsv.listar_ventas(registros, ultimos)
+        ul_ventas = archivocsv.listar_ventas(registros, ultimos)
         return render_template('ultimas.html',ul_ventas=ul_ventas)
     else:
         flash('Para Acceder debe loguearse, ingrese sus credenciales por favor.')
         return redirect(url_for('ingresar'))
 
-#---Productos que compró un cliente--#
+#-----Busqueda de productos por cliente-----#
 
 @app.route('/prod_clientes', methods=['GET', 'POST'])
 def prod_clientes():
@@ -122,18 +152,21 @@ def prod_clientes():
                 if len(val) == 0:
                     flash('No hemos encontrado resultados para su busqueda')
                 elif len(val) == 1:
-                    listar = archivocsv.productos_por_cliente(registros,cliente)
+                    listar = archivocsv.productos_por_cliente(registros=registros,cliente=cliente)
+                    with open('busqueda.csv','w') as archivo:
+                        writer=csv.writer(archivo)
+                        writer.writerows(listar)
                     return render_template('prod_clientes.html', form = formulario, listar = listar, cliente= formulario.cliente.data.upper())
                 else:
                     flash('Hemos encontrado varios clientes. Por favor seleccione el que desee:')
-                    return render_template('prod_clientes.html', form = formulario, clientes = val)
+                    return render_template('prod_clientes.html', form = formulario, clientes = val)        
         return render_template('prod_clientes.html', form = formulario)
     else:
         flash('Para Acceder debe loguearse, ingrese sus credenciales por favor.')
         return redirect(url_for('ingresar'))
 
 
-#---Clientes--#
+#-----Clientes múltiples-----#
 
 @app.route('/prod_clientes/<clientes>', methods=['GET', 'POST'])
 def prod_clientes2(clientes):
@@ -164,7 +197,7 @@ def prod_clientes2(clientes):
         flash('Para Acceder debe loguearse, ingrese sus credenciales por favor.')
         return redirect(url_for('ingresar'))
 
-#---Clientes que compraron un producto--#
+#-----Busqueda de clientes por producto-----#
 
 @app.route('/clientes_prod', methods=['GET', 'POST'])
 def clientes_prod():
@@ -181,6 +214,9 @@ def clientes_prod():
                     flash('No hemos encontrado resultados para su busqueda')
                 elif len(val) == 1:
                     listar = archivocsv.clientes_por_producto(registros,producto)
+                    with open('busqueda.csv','w') as archivo:
+                        writer=csv.writer(archivo)
+                        writer.writerows(listar)
                     return render_template('clientes_prod.html', form = formulario, listar = listar, producto= formulario.producto.data.upper())
                 else:
                     flash('Hemos encontrado varios clientes. Por favor seleccione el que desee:')
@@ -190,7 +226,7 @@ def clientes_prod():
         flash('Para Acceder debe loguearse, ingrese sus credenciales por favor.')
         return redirect(url_for('ingresar'))
 
-#---Clientes--#
+#-----Productos múltiples-----#
 
 @app.route('/clientes_prod/<productos>', methods=['GET', 'POST'])
 def cliente_prod2(productos):
@@ -221,7 +257,7 @@ def cliente_prod2(productos):
         flash('Para Acceder debe loguearse, ingrese sus credenciales por favor.')
         return redirect(url_for('ingresar'))
 
-#---Productos Vendidos--#
+#-----Productos más Vendidos-----#
 
 @app.route('/prod_vendidos', methods=['GET', 'POST'])
 def productos_mas_vendidos():
@@ -229,13 +265,16 @@ def productos_mas_vendidos():
         produc = []
         cantidad = 5
         produc = archivocsv.productos_mas_vendidos(registros = registros, cantidad=cantidad)
+        with open('busqueda.csv','w') as archivo:
+            writer=csv.writer(archivo)
+            writer.writerows(produc)
         return render_template('prod_vendidos.html', produc = produc)
     else:
         flash('Para Acceder debe loguearse, ingrese sus credenciales por favor.')
         return redirect(url_for('ingresar'))
 
 
-#---Clientes que más plata gastaron--#
+#-----Clientes que más dinero gastaron-----#
 
 @app.route('/mej_clientes', methods=['GET', 'POST'])
 def mejores_clientes():
@@ -243,11 +282,27 @@ def mejores_clientes():
         produc = []
         cantidad = 5
         produc = archivocsv.clientes_mas_gastaron(registros = registros, cantidad=cantidad)
+        with open('busqueda.csv','w') as archivo:
+            writer=csv.writer(archivo)
+            writer.writerows(produc)
         return render_template('mej_clientes.html', produc = produc)
     else:
         flash('Para Acceder debe loguearse, ingrese sus credenciales por favor.')
         return redirect(url_for('ingresar'))
 
+#-----Descarga de consultas realizadas-----#
+
+@app.route ('/descargas', methods=['GET', 'POST'])
+def descargas():
+    if 'username'in session:
+        ahora = datetime.now()
+        nombre_descarga = "Resultados_"+str(ahora.year)+str(ahora.month)+str(ahora.day)+"_"+str(ahora.hour)+str(ahora.minute)+str(ahora.second)+".csv"
+        return send_file("busqueda.csv", as_attachment=True,attachment_filename=nombre_descarga)
+    else:
+        flash('Para Acceder debe loguearse, ingrese sus credenciales por favor.')
+        return redirect(url_for('ingresar'))
+
+
 if __name__ == "__main__":
-    #app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=True)
     manager.run()
