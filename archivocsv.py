@@ -134,7 +134,7 @@ def encontrar_clientes(registros, nombre_cliente):
             else:
                 cliente.append(registros[x].cliente)
         else:
-            pass
+            pass      
     return cliente
 
 #--Lista de productos que compro determinado cliente--#
@@ -147,6 +147,11 @@ def productos_por_cliente(registros, cliente):
     for x in range(len(registros)):
         if nombre_cliente in registros[x].cliente:
             productos.append(registros[x])
+
+    with open('informe.csv','w',newline='') as archivo:
+        archivo.write("Listado de productos que vende el cliente indicado" + '\n')
+        writer = csv.writer(archivo)
+        writer.writerow(productos)
     return productos
 
 #--Encuentra a los productos que coincidan con los caracteres ingresados por el usuario--#
@@ -173,6 +178,11 @@ def clientes_por_producto(registros, producto):
     for x in range(len(registros)):
         if nombre_producto in registros[x].producto:
             cliente.append(registros[x])
+
+    with open('informe.csv','w',newline='') as archivo:
+        archivo.write("Los siguientes clientes trabajan el producto que ha indicado" + '\n')
+        writer = csv.writer(archivo)
+        writer.writerow(cliente)
     return cliente
 
 #--Listado de productos más vendidos--#
@@ -180,21 +190,21 @@ def clientes_por_producto(registros, producto):
 def productos_mas_vendidos(registros, cantidad):
     producto = []
     cant_producto = []
-    colunna=0
+    columna=0
 
     for x in range(len(registros)):
         if x == 0:
             producto.append(registros[x].producto)
             cant_producto.append([])
-            cant_producto[colunna]= [0, registros[x]]
+            cant_producto[columna]= [0, registros[x]]
         else:
             if registros[x].producto in producto:
                 pass
             else:
-                colunna = colunna + 1
+                columna = columna + 1
                 producto.append(registros[x].producto)
                 cant_producto.append([])
-                cant_producto[colunna]= [0, registros[x]]
+                cant_producto[columna]= [0, registros[x]]
 
     for x in range(len(producto)):
         for y in range(len(registros)):
@@ -212,27 +222,34 @@ def productos_mas_vendidos(registros, cantidad):
         list_cant.append([0]*2)
         list_cant[x][0] = cant_producto[x][0]
         list_cant[x][1] = cant_producto[x][1]
+    with open('informe.csv','w') as archivo:
+        archivo.write("Listar los productos mas vendidos" + '\n')
+        writer = csv.writer(archivo)
+        archivo.write('\n')
+        #archivo.write(list_cant[0][1]+'\n')
+        #writer.writerow(["CODIGO","PRODUCTO","CANTIDAD"])
+        writer.writerows(list_cant)
     return list_cant
 
 #--Mejores clientes--#
 def clientes_mas_gastaron(registros, cantidad):
     clientes = []
     cant_cliente = []
-    colunna=0
+    columna=0
 
     for x in range(len(registros)):
         if x == 0:
             clientes.append(registros[x].cliente)
             cant_cliente.append([])
-            cant_cliente[colunna]=[0, registros[x]]
+            cant_cliente[columna]=[0, registros[x]]
         else:
             if registros[x].cliente in clientes:
                 pass
             else:
                 clientes.append(registros[x].cliente)
-                colunna = colunna + 1
+                columna = columna + 1
                 cant_cliente.append([])
-                cant_cliente[colunna]=[0, registros[x]]
+                cant_cliente[columna]=[0, registros[x]]
 
 
     for x in range(len(clientes)):
@@ -251,9 +268,12 @@ def clientes_mas_gastaron(registros, cantidad):
         list_cant.append([0]*2)
         list_cant[x][0] = cant_cliente[x][0]
         list_cant[x][1] = cant_cliente[x][1]
+    with open('informe.csv','w') as archivo:
+        archivo.write("Listar los clientes que más dinero gastaron" + '\n')
+        writer=csv.writer(archivo)
+        archivo.write('\n')
+        #archivo.write(list_cant[0][1]+'\n')
+        #writer.writerow(["CLIENTE","VALOR",])
+        writer.writerows(list_cant)
+    print(list_cant)
     return list_cant
-
-
-
-
-
